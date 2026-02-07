@@ -1,0 +1,12 @@
+DESCRIPTIVE STATISTICS RESULTS
+Total valid numbers: 12767
+Mean: 2.474673954997149e+20
+Median: 2.4664097307429e+20
+Mode: No mode
+Variance: 2.0910793147136484e+40
+Standard Deviation: 1.4460564700984703e+20
+Execution Time (seconds): 0.009002685546875
+
+ERRORS FOUND:
+Invalid data at line 183: 'ABBA'
+Invalid data at line 229: 'ERROR'

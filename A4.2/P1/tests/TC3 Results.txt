@@ -1,0 +1,8 @@
+DESCRIPTIVE STATISTICS RESULTS
+Total valid numbers: 12624
+Mean: 249.77621989860583
+Median: 249.0
+Mode: [94.0]
+Variance: 21117.27747316329
+Standard Deviation: 145.31784980917962
+Execution Time (seconds): 0.007000923156738281

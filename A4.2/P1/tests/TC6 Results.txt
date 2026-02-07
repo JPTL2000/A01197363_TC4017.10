@@ -1,0 +1,8 @@
+DESCRIPTIVE STATISTICS RESULTS
+Total valid numbers: 3000
+Mean: 1.8790659927977473e+20
+Median: 1.88008049965543e+20
+Mode: No mode
+Variance: 1.1530904699530647e+40
+Standard Deviation: 1.0738205017381e+20
+Execution Time (seconds): 0.001961946487426758
