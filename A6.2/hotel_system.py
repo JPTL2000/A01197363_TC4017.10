@@ -141,3 +141,64 @@ class Storage:
                   {k: v.to_dict() for k, v in self.customers.items()})
         save_json(RESERVATIONS_FILE,
                   {k: v.to_dict() for k, v in self.reservations.items()})
+        
+
+class HotelService:
+    """Hotel management operations."""
+
+    def __init__(self, storage):
+        self.storage = storage
+
+    def create_hotel(self, hotel):
+        self.storage.hotels[hotel.hotel_id] = hotel
+        self.storage.save_all()
+
+    def delete_hotel(self, hotel_id):
+        self.storage.hotels.pop(hotel_id, None)
+        self.storage.save_all()
+
+    def get_hotel(self, hotel_id):
+        return self.storage.hotels.get(hotel_id)
+    
+    def display_hotel(self, hotel_id):
+        hotel = self.get_hotel(hotel_id)
+        if not hotel:
+            print("Hotel not found")
+            return
+
+        print(f"Hotel ID: {hotel.hotel_id}")
+        print(f"Name: {hotel.name}")
+        print(f"Rooms: {hotel.rooms}")
+        print(f"Reserved: {hotel.reserved_rooms}")
+
+    def modify_hotel(self, hotel_id, name, rooms):
+        hotel = self.get_hotel(hotel_id)
+        if hotel:
+            hotel.name = name
+            hotel.rooms = rooms
+            self.storage.save_all()
+
+    def reserve_room(self, hotel_id, room_number):
+        hotel = self.get_hotel(hotel_id)
+        if not hotel:
+            return False
+        if room_number in hotel.reserved_rooms:
+            return False
+        if room_number > hotel.rooms:
+            return False
+
+        hotel.reserved_rooms.append(room_number)
+        self.storage.save_all()
+        return True
+
+    def cancel_room(self, hotel_id, room_number):
+        hotel = self.get_hotel(hotel_id)
+        if not hotel:
+            return False
+
+        if room_number in hotel.reserved_rooms:
+            hotel.reserved_rooms.remove(room_number)
+            self.storage.save_all()
+            return True
+        return False
+    
