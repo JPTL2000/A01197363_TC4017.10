@@ -1,0 +1,10 @@
+{
+    "H1": {
+        "hotel_id": "H1",
+        "name": "Test Hotel",
+        "rooms": 10,
+        "reserved_rooms": [
+            2
+        ]
+    }
+}

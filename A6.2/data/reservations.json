@@ -1,0 +1,8 @@
+{
+    "R1": {
+        "reservation_id": "R1",
+        "customer_id": "C1",
+        "hotel_id": "H1",
+        "room_number": 2
+    }
+}

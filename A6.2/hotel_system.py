@@ -5,8 +5,10 @@ Hotel Reservation System
 import json
 import os
 import unittest
+from io import StringIO
+from unittest.mock import patch
 
-DATA_DIR = "data"
+DATA_DIR = "A6.2/data"
 HOTELS_FILE = os.path.join(DATA_DIR, "hotels.json")
 CUSTOMERS_FILE = os.path.join(DATA_DIR, "customers.json")
 RESERVATIONS_FILE = os.path.join(DATA_DIR, "reservations.json")
@@ -271,3 +273,94 @@ class ReservationService:
         self.storage.save_all()
         return True
 
+
+class TestHotelSystem(unittest.TestCase):
+
+    def setUp(self):
+        self.storage = Storage()
+        self.hotel_service = HotelService(self.storage)
+        self.customer_service = CustomerService(self.storage)
+        self.reservation_service = ReservationService(
+            self.storage,
+            self.hotel_service,
+        )
+
+        self.hotel = Hotel("H1", "Test Hotel", 10)
+        self.customer = Customer("C1", "Juan", "juan@email.com")
+
+        self.hotel_service.create_hotel(self.hotel)
+        self.customer_service.create_customer(self.customer)
+
+    def test_invalid_json_file(self):
+        with open("A6.2/data/hotels.json", "w") as f:
+            f.write("{ invalid json")
+
+        storage = Storage()
+        self.assertEqual(storage.hotels, {})
+
+    def test_create_and_get_hotel(self):
+        hotel = self.hotel_service.get_hotel("H1")
+        self.assertEqual(hotel.name, "Test Hotel")
+
+    def test_modify_hotel(self):
+        self.hotel_service.modify_hotel("H1", "Updated", 20)
+        self.assertEqual(
+            self.hotel_service.get_hotel("H1").rooms, 20)
+
+    def test_reserve_room(self):
+        result = self.hotel_service.reserve_room("H1", 2)
+        self.assertTrue(result)
+
+    def test_cancel_room(self):
+        self.hotel_service.reserve_room("H1", 3)
+        result = self.hotel_service.cancel_room("H1", 3)
+        self.assertTrue(result)
+
+    def test_create_reservation(self):
+        reservation = Reservation("R1", "C1", "H1", 2)
+        result = self.reservation_service.create_reservation(
+            reservation)
+        self.assertTrue(result)
+
+    def test_cancel_reservation(self):
+        reservation = Reservation("R2", "C1", "H1", 3)
+        self.reservation_service.create_reservation(reservation)
+        result = self.reservation_service.cancel_reservation("R2")
+        self.assertTrue(result)
+
+    def test_invalid_reservation(self):
+        reservation = Reservation("R3", "INVALID", "H1", 1)
+        self.assertFalse(
+            self.reservation_service.create_reservation(reservation)
+        )
+    
+    def test_display_hotel(self):
+        with patch('sys.stdout', new=StringIO()) as fake_out:
+            self.hotel_service.display_hotel("H1")
+            output = fake_out.getvalue()
+        self.assertIn("Hotel ID: H1", output)
+        self.assertIn("Name: Test Hotel", output)
+        self.assertIn("Rooms: 10", output)
+        self.assertIn("Reserved: []", output)
+    
+    def test_display_hotel_not_found(self):
+        with patch('sys.stdout', new=StringIO()) as fake_out:
+            self.hotel_service.display_hotel("INVALID")
+            self.assertIn("Hotel not found", fake_out.getvalue())
+
+    def test_display_customer(self):
+        with patch('sys.stdout', new=StringIO()) as fake_out:
+            self.customer_service.display_customer("C1")
+            output = fake_out.getvalue()
+        self.assertIn("Customer ID: C1", output)
+        self.assertIn("Name: Juan", output)
+        self.assertIn("Email: juan@email.com", output)
+    
+    def test_display_customer_not_found(self):
+        with patch('sys.stdout', new=StringIO()) as fake_out:
+            self.customer_service.display_customer("INVALID")
+            self.assertIn("Customer not found", fake_out.getvalue())
+
+
+if __name__ == "__main__":
+    unittest.main(buffer=False)
