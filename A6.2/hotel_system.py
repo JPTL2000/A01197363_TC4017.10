@@ -6,6 +6,38 @@ import json
 import os
 import unittest
 
+DATA_DIR = "data"
+HOTELS_FILE = os.path.join(DATA_DIR, "hotels.json")
+CUSTOMERS_FILE = os.path.join(DATA_DIR, "customers.json")
+RESERVATIONS_FILE = os.path.join(DATA_DIR, "reservations.json")
+
+
+def ensure_data_dir():
+    """Ensure data directory exists."""
+    os.makedirs(DATA_DIR, exist_ok=True)
+
+
+def load_json(path):
+    """Load JSON safely, handling invalid data."""
+    if not os.path.exists(path):
+        return {}
+
+    try:
+        with open(path, "r", encoding="utf-8") as file:
+            return json.load(file)
+    except (json.JSONDecodeError, OSError) as error:
+        print(f"[ERROR] Could not read {path}: {error}")
+        return {}
+
+
+def save_json(path, data):
+    """Save JSON safely."""
+    try:
+        with open(path, "w", encoding="utf-8") as file:
+            json.dump(data, file, indent=4)
+    except OSError as error:
+        print(f"[ERROR] Could not write {path}: {error}")
+
 
 class Hotel:
     """Hotel entity."""
@@ -81,3 +113,31 @@ class Reservation:
         )
 
 
+class Storage:
+    """Persistence layer."""
+
+    def __init__(self):
+        ensure_data_dir()
+        self.hotels = self._load_hotels()
+        self.customers = self._load_customers()
+        self.reservations = self._load_reservations()
+
+    def _load_hotels(self):
+        raw = load_json(HOTELS_FILE)
+        return {k: Hotel.from_dict(v) for k, v in raw.items()}
+
+    def _load_customers(self):
+        raw = load_json(CUSTOMERS_FILE)
+        return {k: Customer.from_dict(v) for k, v in raw.items()}
+
+    def _load_reservations(self):
+        raw = load_json(RESERVATIONS_FILE)
+        return {k: Reservation.from_dict(v) for k, v in raw.items()}
+
+    def save_all(self):
+        save_json(HOTELS_FILE,
+                  {k: v.to_dict() for k, v in self.hotels.items()})
+        save_json(CUSTOMERS_FILE,
+                  {k: v.to_dict() for k, v in self.customers.items()})
+        save_json(RESERVATIONS_FILE,
+                  {k: v.to_dict() for k, v in self.reservations.items()})
