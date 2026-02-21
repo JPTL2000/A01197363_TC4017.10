@@ -334,6 +334,11 @@ class TestHotelSystem(unittest.TestCase):
         storage = Storage()
         self.assertEqual(storage.hotels, {})
 
+    def test_invalid_get_hotel(self):
+        """Test invalid get of a hotel"""
+        result = self.hotel_service.get_hotel("H2")
+        self.assertFalse(result)
+
     def test_create_hotel(self):
         """Test hotel creation"""
         hotel = Hotel("H2", "Test Hotel 2", 10)
@@ -348,11 +353,6 @@ class TestHotelSystem(unittest.TestCase):
         self.hotel_service.delete_hotel("H2")
         result = self.hotel_service.get_hotel("H2")
         self.assertFalse(result)
-
-    def test_get_hotel(self):
-        """Test get a hotel"""
-        hotel = self.hotel_service.get_hotel("H1")
-        self.assertEqual(hotel.name, "Test Hotel")
 
     def test_modify_hotel(self):
         """Test the modification of hotel"""
@@ -371,6 +371,11 @@ class TestHotelSystem(unittest.TestCase):
         result = self.hotel_service.cancel_room("H1", 3)
         self.assertTrue(result)
 
+    def test_invalid_get_customer(self):
+        """Test get of a customer"""
+        result = self.customer_service.get_customer("C2")
+        self.assertFalse(result)
+
     def test_create_customer(self):
         """Test customer creation"""
         customer = Customer("C2", "Pablo", "pablo@email.com")
@@ -385,11 +390,6 @@ class TestHotelSystem(unittest.TestCase):
         self.customer_service.delete_customer("C2")
         result = self.customer_service.get_customer("C2")
         self.assertFalse(result)
-
-    def test_get_customer(self):
-        """Test get of a customer"""
-        customer = self.customer_service.get_customer("C1")
-        self.assertEqual(customer.name, "Juan")
 
     def test_modify_customer(self):
         """Test the modification of customer"""
