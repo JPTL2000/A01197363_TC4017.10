@@ -334,13 +334,28 @@ class TestHotelSystem(unittest.TestCase):
         storage = Storage()
         self.assertEqual(storage.hotels, {})
 
-    def test_create_and_get_hotel(self):
-        """Test the creation and get of a hotel"""
+    def test_create_hotel(self):
+        """Test hotel creation"""
+        hotel = Hotel("H2", "Test Hotel 2", 10)
+        self.hotel_service.create_hotel(hotel)
+        result = self.hotel_service.get_hotel("H2")
+        self.assertTrue(result)
+
+    def test_delete_hotel(self):
+        """Test hotel deletion"""
+        hotel = Hotel("H2", "Test Hotel 2", 10)
+        self.hotel_service.create_hotel(hotel)
+        self.hotel_service.delete_hotel("H2")
+        result = self.hotel_service.get_hotel("H2")
+        self.assertFalse(result)
+
+    def test_get_hotel(self):
+        """Test get a hotel"""
         hotel = self.hotel_service.get_hotel("H1")
         self.assertEqual(hotel.name, "Test Hotel")
 
     def test_modify_hotel(self):
-        """Test the modification of hotel """
+        """Test the modification of hotel"""
         self.hotel_service.modify_hotel("H1", "Updated", 20)
         self.assertEqual(
             self.hotel_service.get_hotel("H1").rooms, 20)
@@ -355,6 +370,32 @@ class TestHotelSystem(unittest.TestCase):
         self.hotel_service.reserve_room("H1", 3)
         result = self.hotel_service.cancel_room("H1", 3)
         self.assertTrue(result)
+
+    def test_create_customer(self):
+        """Test customer creation"""
+        customer = Customer("C2", "Pablo", "pablo@email.com")
+        self.customer_service.create_customer(customer)
+        result = self.customer_service.get_customer("C2")
+        self.assertTrue(result)
+
+    def test_delete_customer(self):
+        """Test customer deletion"""
+        customer = Customer("C2", "Pablo", "pablo@email.com")
+        self.customer_service.create_customer(customer)
+        self.customer_service.delete_customer("C2")
+        result = self.customer_service.get_customer("C2")
+        self.assertFalse(result)
+
+    def test_get_customer(self):
+        """Test get of a customer"""
+        customer = self.customer_service.get_customer("C1")
+        self.assertEqual(customer.name, "Juan")
+
+    def test_modify_customer(self):
+        """Test the modification of customer"""
+        self.customer_service.modify_customer("C1", "Juan", "j@email.com")
+        self.assertEqual(
+            self.customer_service.get_customer("C1").email, "j@email.com")
 
     def test_create_reservation(self):
         """Test reservation creation"""
@@ -375,6 +416,12 @@ class TestHotelSystem(unittest.TestCase):
         reservation = Reservation("R3", "INVALID", "H1", 1)
         self.assertFalse(
             self.reservation_service.create_reservation(reservation)
+        )
+
+    def test_invalid_cancelation(self):
+        """Test invalid cancelation"""
+        self.assertFalse(
+            self.reservation_service.cancel_reservation("R4")
         )
 
     def test_display_hotel(self):
