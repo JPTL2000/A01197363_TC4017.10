@@ -237,3 +237,37 @@ class CustomerService:
             customer.email = email
             self.storage.save_all()
 
+class ReservationService:
+    """Reservation management."""
+
+    def __init__(self, storage, hotel_service):
+        self.storage = storage
+        self.hotel_service = hotel_service
+
+    def create_reservation(self, reservation):
+        if reservation.customer_id not in self.storage.customers:
+            return False
+
+        if not self.hotel_service.reserve_room(
+                reservation.hotel_id,
+                reservation.room_number):
+            return False
+
+        self.storage.reservations[
+            reservation.reservation_id] = reservation
+        self.storage.save_all()
+        return True
+
+    def cancel_reservation(self, reservation_id):
+        reservation = self.storage.reservations.get(reservation_id)
+        if not reservation:
+            return False
+
+        self.hotel_service.cancel_room(
+            reservation.hotel_id,
+            reservation.room_number)
+
+        del self.storage.reservations[reservation_id]
+        self.storage.save_all()
+        return True
+
