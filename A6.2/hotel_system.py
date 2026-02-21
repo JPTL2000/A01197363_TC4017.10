@@ -202,3 +202,38 @@ class HotelService:
             return True
         return False
     
+
+class CustomerService:
+    """Customer management."""
+
+    def __init__(self, storage):
+        self.storage = storage
+
+    def create_customer(self, customer):
+        self.storage.customers[customer.customer_id] = customer
+        self.storage.save_all()
+
+    def delete_customer(self, customer_id):
+        self.storage.customers.pop(customer_id, None)
+        self.storage.save_all()
+
+    def get_customer(self, customer_id):
+        return self.storage.customers.get(customer_id)
+
+    def display_customer(self, customer_id):
+        customer = self.get_customer(customer_id)
+        if not customer:
+            print("Customer not found")
+            return
+
+        print(f"Customer ID: {customer.customer_id}")
+        print(f"Name: {customer.name}")
+        print(f"Email: {customer.email}")
+
+    def modify_customer(self, customer_id, name, email):
+        customer = self.get_customer(customer_id)
+        if customer:
+            customer.name = name
+            customer.email = email
+            self.storage.save_all()
+
